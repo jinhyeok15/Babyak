@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from "react";
-import type { UserModel } from "@/libs/query/users.query";
+import type { UserDetail } from "@/libs/query/users.type";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 const columns: GridColDef[] = [
@@ -18,7 +18,7 @@ const columns: GridColDef[] = [
   { field: 'isOk', headerName: '수락여부' },
 ]
 
-const UsersTable = ({ list }: { list: UserModel[] | undefined }) => {
+const UsersTable = ({ list }: { list: UserDetail[] | undefined }) => {
   const rows = useMemo(
     () =>
       list?.map((item, idx) => ({

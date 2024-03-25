@@ -20,11 +20,12 @@ import {
 } from "@mui/material";
 import { Button } from "@/components/BaseButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { UserModel, useAddUserMutation } from "@/libs/query/users.query";
+import { useAddUserMutation } from "@/libs/query/users.query";
+import type { UserRegister } from "@/libs/query/users.type";
 import PhoneNumberInput from "@/components/PhoneNumberInput";
 import { NOT_BLANK_WORD_REGEX, PHONE_NUMBER_REGEX } from "@/libs/utils/regex";
 
-const DEFAULT_FORM_VALUE: UserModel = {
+const DEFAULT_FORM_VALUE: UserRegister = {
   type: '선배',
   phone: '',
   univ: '',
@@ -39,7 +40,7 @@ const DEFAULT_FORM_VALUE: UserModel = {
 const UserAddForm = () => {
   const { mutateAsync } = useAddUserMutation();
 
-  const [formValue, setFormValue] = useState<UserModel>(DEFAULT_FORM_VALUE);
+  const [formValue, setFormValue] = useState<UserRegister>(DEFAULT_FORM_VALUE);
 
   const [disabled, setDisabled] = useState<boolean>(true);
 
@@ -106,7 +107,7 @@ const UserAddForm = () => {
     (e: React.FormEvent) => {
       e.preventDefault();
 
-      const payload: UserModel = {...formValue};
+      const payload: UserRegister = {...formValue};
 
       setDisabled(true);
       mutateAsync(payload).finally(() => {
