@@ -1,51 +1,120 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Button,
-  FormControl,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   Typography,
+  SelectChangeEvent,
+  TextField,
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  Checkbox
 } from "@mui/material";
-import { SelectChangeEvent } from "@mui/material";
+import { Button } from "@/components/BaseButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { UserModel, useAddUserMutation } from "@/libs/query/users.query";
 import PhoneNumberInput from "@/components/PhoneNumberInput";
+import { NOT_BLANK_WORD_REGEX, PHONE_NUMBER_REGEX } from "@/libs/utils/regex";
+
+const DEFAULT_FORM_VALUE: UserModel = {
+  type: '선배',
+  phone: '',
+  univ: '',
+  major: '',
+  studentNum: '',
+  sameUniv: false,
+  sameMajor: false,
+  diffUniv: false,
+  diffMajor: false,
+};
 
 const UserAddForm = () => {
   const { mutateAsync } = useAddUserMutation();
 
-  const [typeValue, setTypeValue] = useState<string>("선배");
-  const [phoneValue, setPhoneValue] = useState<string>("");
-  const [disabled, setDisabled] = useState<boolean>(false);
+  const [formValue, setFormValue] = useState<UserModel>(DEFAULT_FORM_VALUE);
 
-  const handlePhoneValueChange = (value: string) => {
-    setPhoneValue(value);
-  };
+  const [disabled, setDisabled] = useState<boolean>(true);
 
-  const handleTypeValueChange = (e: SelectChangeEvent) => {
-    setTypeValue(e.target.value as string);
-  };
+  const handlePhoneValueChange = useCallback((value: string) => {
+    setFormValue({
+      ...formValue,
+      phone: value,
+    })
+  }, [formValue]);
+
+  const handleTypeValueChange = useCallback((e: SelectChangeEvent) => {
+    setFormValue({
+      ...formValue,
+      type: e.target.value as string,
+    });
+  }, [formValue]);
+
+  const handleUnivChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValue({
+      ...formValue,
+      univ: e.target.value,
+    })
+  }, [formValue]);
+
+  const handleMajorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValue({
+      ...formValue,
+      major: e.target.value,
+    });
+  }, [formValue])
+
+  const handleStuNumChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (isNaN(Number(value))) {
+      return;
+    }
+    setFormValue({
+      ...formValue,
+      studentNum: e.target.value,
+    })
+  }, [formValue]);
+
+  const handleCheckboxChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValue({
+      ...formValue,
+      [event.target.name]: event.target.checked,
+    })
+  }, [formValue]);
+
+  useEffect(() => {
+    let isValid = true;
+
+    if (!PHONE_NUMBER_REGEX.test(formValue.phone)) isValid = false;
+    if (!NOT_BLANK_WORD_REGEX.test(formValue.univ)) isValid = false;
+    if (!NOT_BLANK_WORD_REGEX.test(formValue.major)) isValid = false;
+    if (!formValue.studentNum) isValid = false;
+
+    isValid ? setDisabled(false) : setDisabled(true);
+  }, [
+    formValue
+  ]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
+
+      const payload: UserModel = {...formValue};
+
       setDisabled(true);
-
-      const payload: UserModel = {
-        type: typeValue,
-        phone: phoneValue,
-      };
-
-      mutateAsync(payload).finally(() => setDisabled(false));
+      mutateAsync(payload).finally(() => {
+        setDisabled(false);
+        setFormValue(DEFAULT_FORM_VALUE);
+      });
     },
-    [typeValue, phoneValue]
+    [formValue]
   );
 
   return (
@@ -60,7 +129,7 @@ const UserAddForm = () => {
               <InputLabel id="gubun">구분</InputLabel>
               <Select
                 labelId="gubun"
-                value={typeValue}
+                value={formValue.type}
                 label="구분"
                 onChange={handleTypeValueChange}
                 size="small"
@@ -75,7 +144,41 @@ const UserAddForm = () => {
               </Typography>
               <PhoneNumberInput onChange={handlePhoneValueChange} />
             </Stack>
-            <Button variant="outlined" type="submit" disabled={disabled}>추가하기</Button>
+            <Stack direction="row" spacing={2}>
+              <TextField label="대학" variant="outlined" value={formValue.univ} onChange={handleUnivChange} />
+              <TextField label="학과" variant="outlined" value={formValue.major} onChange={handleMajorChange} />
+              <TextField label="학번" variant="outlined" value={formValue.studentNum} onChange={handleStuNumChange} />
+            </Stack>
+            <FormControl component="fieldset" variant="standard">
+              <FormLabel component="legend">선호유형</FormLabel>
+              <FormGroup row={true}>
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={formValue.sameUniv} onChange={handleCheckboxChange} name="sameUniv" />
+                  }
+                  label="같은학교"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={formValue.sameMajor} onChange={handleCheckboxChange} name="sameMajor" />
+                  }
+                  label="같은학과"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={formValue.diffUniv} onChange={handleCheckboxChange} name="diffUniv" />
+                  }
+                  label="다른학교"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={formValue.diffMajor} onChange={handleCheckboxChange} name="diffMajor" />
+                  }
+                  label="다른학과"
+                />
+              </FormGroup>
+            </FormControl>
+            <Button variant="contained" type="submit" disabled={disabled}>추가하기</Button>
           </Stack>
         </form>
       </AccordionDetails>

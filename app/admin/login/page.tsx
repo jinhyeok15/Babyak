@@ -2,7 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Paper, TextField, Typography } from "@mui/material";
+import { Paper, TextField, Typography } from "@mui/material";
+import { Button } from "@/components/BaseButton";
 import { ROUTES } from "@/constants/routes";
 
 const Page = () => {

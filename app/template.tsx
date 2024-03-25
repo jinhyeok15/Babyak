@@ -2,7 +2,6 @@
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { yellow } from '@mui/material/colors';
-import { Container } from '@mui/material';
 import {
   QueryClient,
   QueryClientProvider,
@@ -10,9 +9,9 @@ import {
 
 const theme = createTheme({
   palette: {
-    // primary: {
-    //   main: yellow[600],
-    // },
+    primary: {
+      main: yellow[600],
+    },
   },
 });
 
@@ -26,9 +25,7 @@ const Template = ({ children }: {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <main>
-          <Container maxWidth="md">
-            {children}
-          </Container>
+          {children}
         </main>
       </ThemeProvider>
     </QueryClientProvider>

@@ -6,14 +6,24 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const USERS_KEY = "user";
 
+export type PreferCategory = {
+  sameUniv?: boolean;
+  diffUniv?: boolean;
+  sameMajor?: boolean;
+  diffMajor?: boolean;
+}
+
 export type UserModel = {
   id?: string;
   type: string;
   phone: string;
   partnerPhone?: string;
+  studentNum: string;
+  major: string;
+  univ: string;
   isOk?: Readonly<boolean>;
   isMatched?: boolean;
-};
+} & PreferCategory;
 
 const validateUserModel = (data: unknown) => {
   if (typeof data !== "object" || data === null) {
