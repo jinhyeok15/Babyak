@@ -18,10 +18,10 @@ const columns: GridColDef[] = [
   { field: 'isOk', headerName: '수락여부' },
 ]
 
-const UsersTable = ({ list }: { list: UserDetail[] | undefined }) => {
+const UsersTable = ({ list }: { list: UserDetail[] }) => {
   const rows = useMemo(
     () =>
-      list?.map((item, idx) => ({
+      list.map((item, idx) => ({
         id: idx + 1,
         type: item.type,
         phone: item.phone,
@@ -33,7 +33,7 @@ const UsersTable = ({ list }: { list: UserDetail[] | undefined }) => {
         diffUniv: item.diffUniv ? 'Y' : 'N',
         diffMajor: item.diffMajor ? 'Y' : 'N',
         isOk: item.isOk ? 'O' : 'X',
-      })) ?? [],
+      })),
     [list]
   );
 

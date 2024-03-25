@@ -21,4 +21,6 @@ export type UserMore = {
   address?: string;
 }
 
-export type UserDetail = UserRegister & UserMore;
+export type UserDetail = UserRegister & UserMore & {
+  id: string;
+};

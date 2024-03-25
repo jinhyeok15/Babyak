@@ -1,9 +1,9 @@
 "use client";
 
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { db } from "@/libs/firebase";
-import type { UserRegister, UserMore, UserDetail } from "@/libs/query/users.type";
+import type { UserRegister, UserDetail } from "@/libs/query/users.type";
 
 export const USERS_KEY = "user";
 
@@ -28,7 +28,10 @@ export const useGetUsersQuery = () =>
       const querySnapshot = await getDocs(collection(db, USERS_KEY));
       let data: UserDetail[] = [];
       querySnapshot.forEach((doc) => {
-        const payload = doc.data();
+        const payload = {
+          ...doc.data(),
+          id: doc.id,
+        };
         validateUserModel(payload);
         data.push(payload as UserDetail);
       });
@@ -47,8 +50,25 @@ export const useAddUserMutation = () => {
       return { id: docRef.id, ...payload };
     },
     onSuccess: (payload) => {
-      const oldData = queryClient.getQueryData<UserRegister[]>([USERS_KEY])!;
+      const oldData = queryClient.getQueryData<UserDetail[]>([USERS_KEY])!;
       queryClient.setQueryData([USERS_KEY], [payload, ...oldData]);
     },
   });
 };
+
+export const useSetUserMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: UserDetail) => {
+      const docRef = doc(db, USERS_KEY, payload.id);
+      await setDoc(docRef, payload);
+
+      return payload;
+    },
+    onSuccess: (payload) => {
+      const oldData = queryClient.getQueryData<UserDetail[]>([USERS_KEY])!;
+      queryClient.setQueryData([USERS_KEY], oldData.map((v) => v.id !== payload.id ? v : {...payload}));
+    }
+  });
+}

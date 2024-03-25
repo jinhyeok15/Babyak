@@ -3,14 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 
 interface Props {
   onChange: (value: string) => void;
+  initialValues?: [string, string, string];
 }
 
 const PhoneNumberInput = ({
-  onChange
+  onChange,
+  initialValues
 }: Props) => {
-  const [first, setFirst] = useState<string>('');
-  const [second, setSecond] = useState<string>('');
-  const [third, setThird] = useState<string>('');
+  const [first, setFirst] = useState<string>(initialValues ? initialValues[0] : '');
+  const [second, setSecond] = useState<string>(initialValues ? initialValues[1] : '');
+  const [third, setThird] = useState<string>(initialValues ? initialValues[2] : '');
 
   useEffect(() => {
     onChange(first + second + third);
