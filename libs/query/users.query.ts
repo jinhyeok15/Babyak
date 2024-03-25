@@ -1,8 +1,8 @@
 "use client";
 
 import { addDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "@/libs/firebase";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { db } from "@/libs/firebase";
 
 export const USERS_KEY = "user";
 

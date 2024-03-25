@@ -2,15 +2,6 @@
 
 import { useMemo } from "react";
 import type { UserModel } from "@/libs/query/users.query";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 const columns: GridColDef[] = [
